@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Strength Tester</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Password Strength Tester</h2>
+        <form id="passwordForm">
+            <label for="password">Enter Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Test Strength</button>
+        </form>
+        <div id="results">
+            <h3>Results:</h3>
+            <p id="score"></p>
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            fetch('/check_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('score').innerText = `Password Score: ${data.score}/7`;
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('feedback').innerHTML = '';
+                data.feedback.forEach(comment => {
+                    const p = document.createElement('p');
+                    p.innerText = comment;
+                    document.getElementById('feedback').appendChild(p);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
